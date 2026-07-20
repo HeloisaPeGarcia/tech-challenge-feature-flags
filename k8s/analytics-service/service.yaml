@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: analytics-service
-  namespace: default
+  namespace: togglemaster
   labels:
     app: analytics-service
 spec:
@@ -13,3 +13,4 @@ spec:
   selector:
     app: analytics-service
   type: ClusterIP
+

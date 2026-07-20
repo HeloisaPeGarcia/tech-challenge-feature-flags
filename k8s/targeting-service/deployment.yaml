@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: targeting-service
-  namespace: default
+  namespace: togglemaster
   labels:
     app: targeting-service
 spec:
@@ -58,3 +58,4 @@ spec:
             requests:
               cpu: "100m"
               memory: "128Mi"
+

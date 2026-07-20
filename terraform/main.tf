@@ -243,6 +243,16 @@ resource "aws_security_group" "rds" {
     security_groups = [aws_security_group.eks.id]
   }
 
+  # Permite acesso externo temporário do GitHub Actions para rodar migrations
+  # Em produção real, remova esta regra.
+  ingress {
+    description = "Allow GitHub Actions runner to run DB migrations"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -250,6 +260,7 @@ resource "aws_security_group" "rds" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 resource "aws_security_group" "redis" {
   name        = "${var.environment}-redis-sg"
@@ -353,9 +364,13 @@ resource "aws_db_instance" "postgres" {
   instance_class       = "db.t3.micro"
   db_name              = "${each.key}_db"
   username             = "dbadmin"
-  password             = "SuperSecurePassword123!" # Senha padrão inicial (pode ser sobrescrita via TF_VAR)
+  password             = "SuperSecurePassword123!"
   parameter_group_name = "default.postgres16"
   skip_final_snapshot  = true
+
+  # Acessível publicamente apenas para permitir que o GitHub Actions
+  # execute as migrations. O Security Group ainda restringe o acesso.
+  publicly_accessible = true
 
   db_subnet_group_name   = aws_db_subnet_group.rds.name
   vpc_security_group_ids = [aws_security_group.rds.id]
@@ -365,6 +380,7 @@ resource "aws_db_instance" "postgres" {
     Environment = var.environment
   }
 }
+
 
 # ElastiCache Redis Subnet Group
 resource "aws_elasticache_subnet_group" "redis" {

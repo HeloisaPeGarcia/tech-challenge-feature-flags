@@ -8,16 +8,16 @@ terraform {
     }
   }
 
-  # Configuração de Backend Remoto S3
-  # Opcional: Adicione a flag 'use_lockfile = true' se estiver usando o Terraform 1.10+
-  # Caso contrário, utilize uma tabela DynamoDB para State Locking (ex: tflock-table)
-  backend "s3" {
-    bucket         = "tech-challenge-tfstate-bucket"
-    key            = "dev/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-lock-table" # Para travar o estado e evitar concorrência
-  }
+  # O backend S3 é configurado dinamicamente via -backend-config no CI/CD.
+  # O bucket e a tabela DynamoDB são criados automaticamente pelo workflow
+  # antes do terraform init ser executado.
+  # Para executar LOCAL, passe os valores diretamente:
+  #   terraform init \
+  #     -backend-config="bucket=SEU-BUCKET" \
+  #     -backend-config="key=dev/terraform.tfstate" \
+  #     -backend-config="region=us-east-1" \
+  #     -backend-config="dynamodb_table=terraform-lock-table"
+  backend "s3" {}
 }
 
 provider "aws" {
