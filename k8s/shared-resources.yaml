@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feature-flags-config
+  namespace: default
+data:
+  # URLs dos serviços internos
+  AUTH_SERVICE_URL: "http://auth-service:8001"
+  FLAG_SERVICE_URL: "http://flag-service:8002"
+  TARGETING_SERVICE_URL: "http://targeting-service:8003"
+  
+  # Banco de Dados RDS (Sobrescreva com os endpoints reais do RDS gerados pelo Terraform)
+  # Exemplo: dev-auth-db.c1234567890.us-east-1.rds.amazonaws.com
+  AUTH_DB_HOST: "dev-auth-db.local"
+  FLAGS_DB_HOST: "dev-flags-db.local"
+  TARGETING_DB_HOST: "dev-targeting-db.local"
+  
+  DB_USER: "dbadmin"
+  DB_NAME_AUTH: "auth_db"
+  DB_NAME_FLAGS: "flags_db"
+  DB_NAME_TARGETING: "targeting_db"
+
+  # Redis ElastiCache (Endpoint real gerado pelo Terraform)
+  REDIS_HOST: "dev-redis.local"
+
+  # AWS SQS e DynamoDB
+  AWS_REGION: "us-east-1"
+  AWS_SQS_URL: "https://sqs.us-east-1.amazonaws.com/123456789012/ToggleMasterEvents"
+  AWS_DYNAMODB_TABLE: "ToggleMasterAnalytics"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: feature-flags-secrets
+  namespace: default
+type: Opaque
+stringData:
+  # Chaves e credenciais de segurança
+  DB_PASSWORD: "SuperSecurePassword123!"
+  MASTER_KEY: "admin-secreto-123"
+  SERVICE_API_KEY: "temp-key"
